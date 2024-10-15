@@ -1,0 +1,20 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: github-repo-creator
+spec:
+  template:
+    spec:
+      containers:
+        - name: repo-creator
+          image: quay.io/tpetkos/create-github-repos:latest
+          env:
+            - name: GITHUB_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.gitops.gitSecretName }}
+                  key: {{ .Values.gitops.gitSecretTokenName }}
+          envFrom:
+            - configMapRef:
+                name: {{ .Values.application.name }}-model-config
+      restartPolicy: Never
